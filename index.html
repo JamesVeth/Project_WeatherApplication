@@ -61,12 +61,28 @@
         .divWeatherCard{
             display: flex;
             flex-direction: column;
+            align-items: center;
             justify-items: flex-start;
             border-radius: 2rem;
             border: 1px solid black;
             background: linear-gradient(180deg, hsl(210, 100%, 74%), hsl(115, 100%, 29%));
             padding: 1rem;
             width: 80%;
+        }
+
+        .divWeatherCard h1, .divWeatherCard p {
+            font-weight: bold;
+            margin-bottom: 2rem;
+        }
+
+        .displayCity{
+
+            font-size: 3rem;
+        }
+        
+        .displayTemp{
+            font-size: 3rem;
+
         }
 
         .errorDisplay{
@@ -179,8 +195,28 @@
                    main: {temp, humidity}, 
                    weather: [{description, id}]} = data;
 
-            divWeatherCard.textContent = "";
-            card.style.display = "flex";
+            divWeatherCard.style.display = "flex";
+
+            const displayCity = document.createElement("h1");
+            const displayTemp = document.createElement("p");
+            const displayHumidity = document.createElement("p");
+            const displayDesc = document.createElement("p");
+
+            const displayEmoji = document.createElement("p");
+
+            displayCity.textContent = city;
+            displayCity.classList.add("city");
+            divWeatherCard.appendChild(displayCity);
+            
+            displayTemp.textContent = `${((temp - 273.15) * (9/5) + 32).toFixed(1)}°F`;
+            displayTemp.classList.add("displayTemp");
+            divWeatherCard.appendChild(displayTemp);
+
+            displayHumidity.textContent = `Humidity: ${humidity}%`;
+            divWeatherCard.appendChild(displayHumidity);
+
+            displayDesc.textContent = description;
+            divWeatherCard.appendChild(displayDesc);
 
 
         }
