@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Weather Checker</title>
+    <style>
+
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        
+        #gridContainer {
+            display: grid;
+            background: linear-gradient(30deg,rgba(103, 138, 255, 0.89), rgba(166, 168, 253, 0.651));
+            box-shadow: 3px 3px 11px rgba(0, 0, 0, 0.712);
+            margin: 1rem 4rem;
+            padding: 2rem;
+            border-radius: 2rem;
+            gap: 1rem;
+            width: 600px; 
+            max-width: 80%;
+
+            grid-template-columns: repeat(1, 1fr);
+            justify-content: center;
+            justify-items: center;
+            justify-self: center;
+            height: 500px;
+            align-content: flex-start; /* aligns the lines (rows) at the top */
+
+        }
+
+
+        body{
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        .formWeather{
+            display: flex;
+            align-self: center;
+            gap: 1rem;
+        }
+
+        .formWeather input{
+            border-radius: 2rem;
+            height: 60px;
+            padding: 0 1rem;            
+        }
+        
+        .formWeather button {
+            cursor: pointer;
+            border-radius: 50%;
+            height: 60px;
+            width: 60px;
+        }
+
+        .divWeatherCard{
+            display: flex;
+            flex-direction: column;
+            justify-items: flex-start;
+            border-radius: 2rem;
+            border: 1px solid black;
+            background: linear-gradient(180deg, hsl(210, 100%, 74%), hsl(115, 100%, 29%));
+            padding: 1rem;
+            width: 80%;
+        }
+
+        .errorDisplay{
+            font-size: 2rem;
+            font-weight: bold;
+            color: black;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div id="gridContainer">
+        
+        <div id = "legend">City Weather Checker</div>
+        
+        <form class="formWeather">
+            <input type="text" class = "inputCity" placeholder="Enter City">
+            <button type = "submit" class = "buttonWeather">▶</button>
+        </form>
+        
+        <div class="divWeatherCard">
+            <!-- div is created here -->
+        </div>
+
+    </div>
+        
+    
+    
+    <script>
+
+        const formWeather = document.querySelector('.formWeather');
+        const divWeatherCard = document.querySelector('.divWeatherCard');
+        const inputCity = document.querySelector('.inputCity');
+        const apiKey = "35aacb5995404c4495f03b1410d6373d";
+        
+        // Note: Each time the submit button is clicked, it initiates an async function that generates a new Promise
+        formWeather.addEventListener("submit", async (event)=>{
+
+            // Prevent form default behaviour of refreshing the page 
+            // (without this, it would prevent the error message from staying on screen)
+
+            event.preventDefault(); 
+            const city = inputCity.value;
+            
+            // if here is an actual value (truthy) & it is a valid city
+            if(city) { 
+
+                try{
+                    // Since we are inside an async function, we can use the await
+                    // await pauses the async function, jumps back to the calling code
+                    // and schedules the function's continuation for later execution via the event loop once the Promise resolves.
+                    const weatherData = await getWeatherData(city);
+                    displayWeatherInfo (weatherData);
+
+                } catch(error) {
+                    displayError(`Error: "${city}" is not a valid city.`)
+                    console.error(errror)
+                }
+
+            } else {
+
+                displayError(`Error: Please enter the name of a valid city.`)
+                
+            }
+            
+        })
+
+        // Get our weather data from openweather API here:
+        async function getWeatherData(city){
+
+            // Fetch is a JS async function that returns a promise, known as the resolve promise, upon completion. 
+            const apiURL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
+            const response = await fetch(apiURL);
+
+            // response.ok is a boolean, which returns true or false, depending on whether a real city was entered or not.
+            // response = the actual response object returned from the fetch async function, which by default returns an object upon resolve.
+            if(!response.ok){
+                // If the response was false, such as an incorrect city name
+                throw new Error(`Error: Could not fetch weather data for "${city}".`);
+            } else {
+                return await response.json(); 
+                // if successful, return the object data to formWeather.addEventListener("submit", async (event)=>{ ...
+                // const weatherData = await getWeatherData(city);
+                // 1. use await to receive the response object
+                // 2. convert it to json string format, so it's easier to work with
+
+            }
+
+            console.log(response);
+            
+        }
+
+        // Display the weather data to the weather card
+        function displayWeatherInfo(data){
+            console.log(data); // display our returned object in json format
+
+            // Object destructuring
+            /* Object destructuring takes an object (or json file) and extracts specific properties, 
+            assigning them to new variables scoped to the current block or function. 
+            In the line below, we are assigning each object property (from data) to a scoped const variable type.
+
+            ** It's also implied that we would have to know the actual structure of this object to get access to 
+            its intricate nested data, for example "main" is another object inside, that has its own properties, 
+            and weather is an array of objects */
+
+            const {name: city,
+                   main: {temp, humidity}, 
+                   weather: [{description, id}]} = data;
+
+            /* 
+            
+            let weatherStatus = document.createElement("p");
+            weatherStatus.textContent = data.weather;
+
+            let humidtyStatus = document.createElement("p");
+            humidtyStatus.textContent = data.humidity;
+
+
+    
+            */
+
+
+        }
+
+        // Used with displayWeatherInfo() to get an emoji
+        function getWeatherEmoji(weatherId) {
+
+        }
+
+        function displayError(message) {
+
+            const errorDisplay = document.createElement("p"); // Create a paragraph element
+            errorDisplay.textContent = message;
+            errorDisplay.classList.add('.errorDisplay');
+
+            divWeatherCard.textContent = ""; // Reset the previous text content
+            divWeatherCard.appendChild(errorDisplay);
+            console.error(message);
+
+
+        }
+
+
+        
+    </script>
+    
+</body>
+</html>
