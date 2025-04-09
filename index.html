@@ -123,13 +123,12 @@
                     displayWeatherInfo (weatherData);
 
                 } catch(error) {
-                    displayError(`Error: "${city}" is not a valid city.`)
-                    console.error(errror)
+                    console.error(error);
                 }
 
             } else {
 
-                displayError(`Error: Please enter the name of a valid city.`)
+                displayError(`Error: Nothing Entered. Please enter the name of a valid city.`);
                 
             }
             
@@ -146,6 +145,9 @@
             // response = the actual response object returned from the fetch async function, which by default returns an object upon resolve.
             if(!response.ok){
                 // If the response was false, such as an incorrect city name
+                displayError(`Error: Could not fetch weather data for "${city}".`);
+                // Note: If you move this line above the previous, it will break out from this scope, 
+                // Because that's what a throw does, and it would have not printed the error message on screen.
                 throw new Error(`Error: Could not fetch weather data for "${city}".`);
             } else {
                 return await response.json(); 
@@ -177,17 +179,8 @@
                    main: {temp, humidity}, 
                    weather: [{description, id}]} = data;
 
-            /* 
-            
-            let weatherStatus = document.createElement("p");
-            weatherStatus.textContent = data.weather;
-
-            let humidtyStatus = document.createElement("p");
-            humidtyStatus.textContent = data.humidity;
-
-
-    
-            */
+            divWeatherCard.textContent = "";
+            card.style.display = "flex";
 
 
         }
