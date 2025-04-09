@@ -72,7 +72,7 @@
 
         .divWeatherCard h1, .divWeatherCard p {
             font-weight: bold;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
         }
 
         .displayCity{
@@ -83,6 +83,11 @@
         .displayTemp{
             font-size: 3rem;
 
+        }
+
+        .displayWeather{
+            font-size: 3rem;
+            color: blue;
         }
 
         .errorDisplay{
@@ -196,6 +201,8 @@
                    weather: [{description, id}]} = data;
 
             divWeatherCard.style.display = "flex";
+            // This resets and clears the text, else it would keep appending
+            divWeatherCard.textContent = "";
 
             const displayCity = document.createElement("h1");
             const displayTemp = document.createElement("p");
@@ -208,21 +215,61 @@
             displayCity.classList.add("city");
             divWeatherCard.appendChild(displayCity);
             
+            // Formula to convert temparature to Farenheit with 1 decimal place
             displayTemp.textContent = `${((temp - 273.15) * (9/5) + 32).toFixed(1)}°F`;
             displayTemp.classList.add("displayTemp");
             divWeatherCard.appendChild(displayTemp);
-
+            
             displayHumidity.textContent = `Humidity: ${humidity}%`;
             divWeatherCard.appendChild(displayHumidity);
-
+            
             displayDesc.textContent = description;
             divWeatherCard.appendChild(displayDesc);
+            
+            displayEmoji.textContent = getWeatherEmoji(id);
+            displayEmoji.classList.add("displayWeather");
+            divWeatherCard.appendChild(displayEmoji);
 
 
         }
 
         // Used with displayWeatherInfo() to get an emoji
         function getWeatherEmoji(weatherId) {
+
+            switch (true) {
+
+                // Thunderstorm
+                case (weatherId >= 200 && weatherId < 300):
+                    return "⚡"
+                    break;
+                // Drizzle
+                case (weatherId >= 300 && weatherId < 500):
+                    return "🌦️"
+                    break;
+                // Rain
+                case (weatherId >= 500 && weatherId < 600):
+                    return "☔"
+                    break;
+                // Snow
+                case (weatherId >= 600 && weatherId < 700):
+                    return "❄️"
+                    break;
+                // Mist
+                case (weatherId >= 700 && weatherId < 800):
+                    return "🌫️"
+                    break;
+                // Clear
+                case (weatherId == 800):
+                    return "☀️"
+                    break;
+                // Clear with clouds
+                case (weatherId > 800 && weatherId < 805):
+                    return "🌤️"
+                    break;
+                default:
+                    return "❔"
+                
+            }
 
         }
 
